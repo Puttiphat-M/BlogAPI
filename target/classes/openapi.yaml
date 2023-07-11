@@ -1,0 +1,415 @@
+openapi: 3.0.0
+info:
+  title: Get Items in Custom Carousel
+  version: 1.0.0
+servers:
+- url: /api
+paths:
+  /blogs:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlogList'
+          description: A list of blogs
+      summary: Return a list of blogs for the carousel(all)
+      x-accepts: application/json
+  /blogs/{title}:
+    delete:
+      parameters:
+      - description: title of the blog
+        explode: false
+        in: path
+        name: title
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Blog deleted successfully
+        "400":
+          description: Invalid request
+      summary: Delete a specific blog by its ID
+      x-accepts: application/json
+    get:
+      parameters:
+      - description: title of the blog
+        explode: false
+        in: path
+        name: title
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Blog'
+          description: Blog retrieved successfully
+        "404":
+          description: Blog not found
+      summary: Return a specific blog by its ID
+      x-accepts: application/json
+    put:
+      parameters:
+      - description: title of the blog
+        explode: false
+        in: path
+        name: title
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Blog'
+        required: true
+      responses:
+        "200":
+          description: Blog updated successfully
+        "400":
+          description: Invalid request payload
+      summary: Update a specific blog by its ID
+      x-content-type: application/json
+      x-accepts: application/json
+  /categories:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CategoryList'
+          description: A list of categories
+      summary: Return all categories
+      x-accepts: application/json
+  /categories/{title}:
+    delete:
+      parameters:
+      - description: title of the category
+        explode: false
+        in: path
+        name: title
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Category deleted successfully
+        "400":
+          description: Invalid request
+      summary: Delete a specific category by its title
+      x-accepts: application/json
+    get:
+      parameters:
+      - description: title of the category
+        explode: false
+        in: path
+        name: title
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: Category return successfully
+        "404":
+          description: Category not found
+      summary: Retrieve a specific category (Search by key of title)
+      x-accepts: application/json
+    post:
+      parameters:
+      - description: title of the category
+        explode: false
+        in: path
+        name: title
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+          description: Category created successfully
+        "400":
+          description: Invalid request payload
+      summary: Create a new category with a custom key
+      x-content-type: application/json
+      x-accepts: application/json
+  /view:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewData'
+          description: A list of create view data
+      summary: Return all create view data
+      x-accepts: application/json
+  /view/{viewdata}:
+    post:
+      parameters:
+      - description: viewdata of the blog
+        explode: false
+        in: path
+        name: viewdata
+        required: true
+        schema:
+          type: string
+        style: simple
+      - explode: true
+        in: query
+        name: title
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: day
+        required: true
+        schema:
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: selectedMonth
+        required: true
+        schema:
+          $ref: '#/components/schemas/Month'
+        style: form
+      - explode: true
+        in: query
+        name: year
+        required: true
+        schema:
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: hour
+        required: true
+        schema:
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: minute
+        required: true
+        schema:
+          type: integer
+        style: form
+      - explode: true
+        in: query
+        name: description
+        required: true
+        schema:
+          type: string
+        style: form
+      - explode: true
+        in: query
+        name: selectedCategories
+        required: true
+        schema:
+          items:
+            type: string
+          type: array
+        style: form
+      - explode: true
+        in: query
+        name: selectedStatus
+        required: true
+        schema:
+          type: string
+        style: form
+      responses:
+        "200":
+          description: Blog created successfully
+        "400":
+          description: Invalid request payload
+      summary: Create a new blog
+      x-content-type: application/json
+      x-accepts: application/json
+  /view/{id}:
+    delete:
+      parameters:
+      - description: ID of the recent view data
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          description: Recent view data deleted successfully
+        "400":
+          description: Invalid request payload
+      summary: Delete a specific blog by its ID
+      x-content-type: application/json
+      x-accepts: application/json
+    put:
+      parameters:
+      - description: ID of the blog
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ViewData'
+        required: true
+      responses:
+        "200":
+          description: Edit view data updated successfully
+        "400":
+          description: Invalid request payload
+      summary: Update the edit view data
+      x-content-type: application/json
+      x-accepts: application/json
+  /view/{id}/{categories}/{date}:
+    get:
+      parameters:
+      - description: id of the blog
+        explode: false
+        in: path
+        name: id
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: categories of the blog
+        explode: false
+        in: path
+        name: categories
+        required: true
+        schema:
+          type: string
+        style: simple
+      - description: date of the blog
+        explode: false
+        in: path
+        name: date
+        required: true
+        schema:
+          type: string
+        style: simple
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ViewData'
+          description: Recent view data retrieved successfully
+      x-accepts: application/json
+components:
+  schemas:
+    Blog:
+      example:
+        image: https://example.com/aeiou
+        link: https://example.com/aeiou
+        title: title
+      properties:
+        title:
+          description: The title of the blog
+          type: string
+        image:
+          description: The URL of the blog image
+          format: url
+          type: string
+        link:
+          description: The URL of the blog link
+          format: url
+          type: string
+      type: object
+    BlogList:
+      items:
+        $ref: '#/components/schemas/Blog'
+      type: array
+    Category:
+      example:
+        title: title
+        key: key
+      properties:
+        title:
+          description: The title of the category
+          type: string
+        key:
+          description: The key of the category
+          type: string
+      type: object
+    CategoryList:
+      items:
+        $ref: '#/components/schemas/Category'
+      type: array
+    Month:
+      example:
+        code: code
+        name: name
+      properties:
+        name:
+          type: string
+        code:
+          type: string
+      type: object
+    ViewData:
+      example:
+        id: id
+        title: title
+        description: description
+        day: day
+        selectedMonth: selectedMonth
+        year: year
+        hour: hour
+        minute: minute
+        selectedCategories:
+        - selectedCategories
+        - selectedCategories
+        selectedStatus: selectedStatus
+      properties:
+        id:
+          description: "The title,date and time of the blog"
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+        day:
+          type: string
+        year:
+          type: string
+        hour:
+          type: string
+        minute:
+          type: string
+        selectedMonth:
+          type: string
+        selectedCategories:
+          items:
+            type: string
+          type: array
+        selectedStatus:
+          type: string
+      type: object
