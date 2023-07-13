@@ -110,7 +110,8 @@ public interface ViewApi {
     )
     @RequestMapping(
         method = RequestMethod.DELETE,
-        value = "/view/{id}"
+        value = "/view/{id}",
+            produces = { "application/json" }
     )
     default ResponseEntity<Void> viewIdDelete(
         @Parameter(name = "id", description = "ID of the recent view data", required = true, in = ParameterIn.PATH) @PathVariable("id") String id
@@ -147,31 +148,21 @@ public interface ViewApi {
     @RequestMapping(
         method = RequestMethod.PUT,
         value = "/view/{id}",
-        consumes = { "application/json" }
+        produces = { "application/json" }
     )
     default ResponseEntity<Void> viewIdPut(
-            @Parameter(name = "id", description = "ID of the blog you want to edit", required = true, in = ParameterIn.PATH) @PathVariable("id") String id,
-            @Parameter(name = "title", description = "Title of the blog", required = true) @Valid @RequestParam("title") String title,
-            @Parameter(name = "description", description = "Description of the blog", required = true) @Valid @RequestParam("description") String description,
-            @Parameter(name = "day", description = "Day of the blog", required = true) @Valid @RequestParam("day") Integer day,
-            @Parameter(name = "year", description = "Year of the blog", required = true) @Valid @RequestParam("year") Integer year,
-            @Parameter(name = "hour", description = "Hour of the blog", required = true) @Valid @RequestParam("hour") Integer hour,
-            @Parameter(name = "minute", description = "Minute of the blog", required = true) @Valid @RequestParam("minute") Integer minute,
-            @Parameter(name = "selectedMonth", description = "Selected month of the blog", required = true) @Valid @RequestParam String selectedMonth,
-            @Parameter(name = "selectedCategories", description = "Selected categories of the blog", required = true) @Valid @RequestParam("selectedCategories") List<String> selectedCategories,
-            @Parameter(name = "selectedStatus", description = "Selected status of the blog", required = true) @Valid @RequestParam("selectedStatus") String selectedStatus    )
+            @NotNull @PathVariable ("id") String id,
+            @NotNull @Parameter(name = "title", description = "Title of the blog", required = true, in = ParameterIn.QUERY) @Valid @RequestParam("title") String title,
+            @NotNull @Parameter(name = "description", description = "Description of the blog", required = true, in = ParameterIn.QUERY) @Valid @RequestParam("description") String description,
+            @NotNull @Parameter(name = "day", description = "Day of the blog", required = true, in = ParameterIn.QUERY) @Valid @RequestParam("day") Integer day,
+            @NotNull @Parameter(name = "selectedMonth", description = "Selected month of the blog", required = true, in = ParameterIn.QUERY) @Valid @RequestParam String selectedMonth,
+            @NotNull @Parameter(name = "year", description = "Year of the blog", required = true, in = ParameterIn.QUERY) @Valid @RequestParam("year") Integer year,
+            @NotNull @Parameter(name = "hour", description = "Hour of the blog", required = true, in = ParameterIn.QUERY) @Valid @RequestParam("hour") Integer hour,
+            @NotNull @Parameter(name = "minute", description = "Minute of the blog", required = true, in = ParameterIn.QUERY) @Valid @RequestParam("minute") Integer minute,
+            @NotNull @Parameter(name = "selectedCategories", description = "Selected categories of the blog", required = true, in = ParameterIn.QUERY) @Valid @RequestParam("selectedCategories") List<String> selectedCategories,
+            @NotNull @Parameter(name = "selectedStatus", description = "Selected status of the blog", required = true, in = ParameterIn.QUERY) @Valid @RequestParam("selectedStatus") String selectedStatus    )
     {
-            return getDelegate().viewIdPut(
-                id,
-                title,
-                day,
-                selectedMonth,
-                year,
-                hour,
-                minute,
-                description,
-                selectedCategories,
-                selectedStatus);
+        return getDelegate().viewIdPut(id, title, description, day, selectedMonth, year, hour, minute, selectedCategories, selectedStatus);
     }
 
 
@@ -200,13 +191,14 @@ public interface ViewApi {
     )
     @RequestMapping(
         method = RequestMethod.POST,
-        value = "/view/{viewdata}"
+        value = "/view/{viewdata}",
+        produces = { "application/json" }
     )
 
     default ResponseEntity<ViewData> viewViewdataPost(
             @NotNull @Parameter(name = "title", description = "", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "title", required = true) String title,
             @NotNull @Parameter(name = "day", description = "", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "day", required = true) Integer day,
-            @NotNull @Parameter(name = "selectedMonth", description = "", required = true, in = ParameterIn.QUERY) @Valid String selectedMonth,
+            @NotNull @Parameter(name = "selectedMonth", description = "", required = true, in = ParameterIn.QUERY) @Valid @RequestParam String selectedMonth,
             @NotNull @Parameter(name = "minute", description = "", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "minute", required = true) Integer minute,
             @NotNull @Parameter(name = "description", description = "", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "description", required = true) String description,
             @NotNull @Parameter(name = "selectedCategories", description = "", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "selectedCategories", required = true) List<String> selectedCategories,

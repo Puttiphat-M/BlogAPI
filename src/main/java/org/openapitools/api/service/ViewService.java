@@ -34,7 +34,7 @@ public class ViewService implements ViewApiDelegate {
         test1.setSelectedStatus("Draft");
         test1.setSelectedCategories(Arrays.asList("Fantasy", "Sci-Fi"));
         test1.setSelectedMonth("Jan");
-        test1.setId("TEST-01/Jan/2021-01:01");
+        test1.setId("TEST-01JAN2021-01.01");
         view_List.add(test1);
     }
 
@@ -102,11 +102,12 @@ public class ViewService implements ViewApiDelegate {
     public void updateViewData(ViewData viewData, String id) {
         for (int i = 0; i < view_List.size(); i++) {
             if (view_List.get(i).getId().equals(id)) {
+                viewData.setId(id); // Update the ID of the viewData object
                 view_List.set(i, viewData);
                 return;
             }
         }
-        throw new IllegalArgumentException("ViewData not found for ID: " + viewData.getId());
+        throw new IllegalArgumentException("ViewData not found for ID: " + id);
     }
 
     public LocalDate validateDate(Integer day, String selectedMonthCode, Integer year) {
@@ -126,7 +127,7 @@ public class ViewService implements ViewApiDelegate {
             }
 
             // Validate the year
-            if (yearValue < 0) {
+            if (yearValue < 2000 || yearValue > 2100) {
                 throw new IllegalArgumentException("Invalid year");
             }
 
@@ -162,10 +163,16 @@ public class ViewService implements ViewApiDelegate {
     public String generateId(String title, LocalDate date, LocalTime time) {
         // Generate the ID based on the provided values
         String formattedTitle = title.trim().replaceAll("\\s+", " ");
-        String formattedMonth = date.getMonth().name();
+        String formattedMonth = date.getMonth().name().substring(0, 3);;
         String formattedDate = date.format(DateTimeFormatter.ofPattern("dd"));
-        String formattedTime = time.format(DateTimeFormatter.ofPattern("HH:mm"));
-        return formattedTitle + "-" + formattedDate + "/" + formattedMonth + "/" + date.getYear() + "-" + formattedTime;
+        String formattedTime = time.format(DateTimeFormatter.ofPattern("HH.mm"));
+        //check whether this id is already exist
+        for (ViewData viewData : view_List) {
+            if (viewData.getId().equals(formattedTitle + "-" + formattedDate + formattedMonth + date.getYear() + "-" + formattedTime)) {
+                throw new IllegalArgumentException("ViewData already exists for ID: " + formattedTitle + "-" + formattedDate + formattedMonth + date.getYear() + "-" + formattedTime);
+            }
+        }
+        return formattedTitle + "-" + formattedDate + formattedMonth + date.getYear() + "-" + formattedTime;
     }
 
     private List<Month> getMonths() {
@@ -213,17 +220,19 @@ public class ViewService implements ViewApiDelegate {
     public ResponseEntity<Void> viewIdPut(
             @PathVariable("id") String id,
             @RequestParam("title") String title,
+            @RequestParam("description") String description,
             @RequestParam("day") Integer day,
             @RequestParam("selectedMonth") String selectedMonth,
             @RequestParam("year") Integer year,
             @RequestParam("hour") Integer hour,
             @RequestParam("minute") Integer minute,
-            @RequestParam("description") String description,
             @RequestParam("selectedCategories") List<String> selectedCategories,
             @RequestParam("selectedStatus") String selectedStatus) {
         // Update the ViewData with the provided values based on the ID
         ViewData viewData = getViewDataById(id);
         String sameid = viewData.getId();
+        System.out.println(sameid);
+        System.out.println(sameid);
         viewData.setTitle(title);
         viewData.setDay(day);
         viewData.setSelectedMonth(selectedMonth);
@@ -248,11 +257,8 @@ public class ViewService implements ViewApiDelegate {
 
     @Override
     public ResponseEntity<Void> viewIdDelete(@PathVariable("id") String id) {
-        // Decode the ID parameter
-        String decodedId = java.net.URLDecoder.decode(id, StandardCharsets.UTF_8);
-
-        // Delete the ViewData with the decoded ID
-        ViewData viewData = getViewDataById(decodedId);
+        // Delete the ViewData with the provided ID
+        ViewData viewData = getViewDataById(id);
         view_List.remove(viewData);
         return ResponseEntity.ok().build();
     }

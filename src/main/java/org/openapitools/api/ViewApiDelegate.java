@@ -22,6 +22,10 @@ public interface ViewApiDelegate {
         return Optional.empty();
     }
 
+    default ViewApiDelegate getDelegate() {
+        return this;
+    }
+
     /**
      * GET /view : Return all create view data
      *
@@ -99,12 +103,12 @@ public interface ViewApiDelegate {
      */
     default ResponseEntity<Void> viewIdPut(@NotNull String id,
                                            @NotNull String title,
+                                           @NotNull String description,
                                            @NotNull Integer day,
                                            @NotNull String selectedMonth,
                                            @NotNull Integer year,
                                            @NotNull Integer hour,
                                            @NotNull Integer minute,
-                                           @NotNull String description,
                                            @NotNull List<String> selectedCategories,
                                            @NotNull String selectedStatus) {
         return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
