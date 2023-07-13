@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.validation.constraints.NotNull;
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -79,7 +78,6 @@ public class ViewService implements ViewApiDelegate {
         blog.setSelectedMonth(SelectedMonth)  ;
         blog.setSelectedCategories(selectedCategories);
         blog.setSelectedStatus(selectedStatus);
-        System.out.println(selectedCategories);
 
         view_List.add(blog);
 
@@ -90,21 +88,8 @@ public class ViewService implements ViewApiDelegate {
 
     public ViewData getViewDataById(String id) {
         for (ViewData viewData : view_List) {
-            //print in console
-            System.out.println("getViewDataById");
             if (viewData.getId().equals(id)) {
                 return viewData;
-            }
-        }
-        throw new IllegalArgumentException("ViewData not found for ID: " + id);
-    }
-
-    public void updateViewData(ViewData viewData, String id) {
-        for (int i = 0; i < view_List.size(); i++) {
-            if (view_List.get(i).getId().equals(id)) {
-                viewData.setId(id); // Update the ID of the viewData object
-                view_List.set(i, viewData);
-                return;
             }
         }
         throw new IllegalArgumentException("ViewData not found for ID: " + id);
@@ -163,10 +148,9 @@ public class ViewService implements ViewApiDelegate {
     public String generateId(String title, LocalDate date, LocalTime time) {
         // Generate the ID based on the provided values
         String formattedTitle = title.trim().replaceAll("\\s+", " ");
-        String formattedMonth = date.getMonth().name().substring(0, 3);;
+        String formattedMonth = date.getMonth().name().substring(0, 3);
         String formattedDate = date.format(DateTimeFormatter.ofPattern("dd"));
         String formattedTime = time.format(DateTimeFormatter.ofPattern("HH.mm"));
-        //check whether this id is already exist
         for (ViewData viewData : view_List) {
             if (viewData.getId().equals(formattedTitle + "-" + formattedDate + formattedMonth + date.getYear() + "-" + formattedTime)) {
                 throw new IllegalArgumentException("ViewData already exists for ID: " + formattedTitle + "-" + formattedDate + formattedMonth + date.getYear() + "-" + formattedTime);
@@ -230,9 +214,6 @@ public class ViewService implements ViewApiDelegate {
             @RequestParam("selectedStatus") String selectedStatus) {
         // Update the ViewData with the provided values based on the ID
         ViewData viewData = getViewDataById(id);
-        String sameid = viewData.getId();
-        System.out.println(sameid);
-        System.out.println(sameid);
         viewData.setTitle(title);
         viewData.setDay(day);
         viewData.setSelectedMonth(selectedMonth);
@@ -251,7 +232,6 @@ public class ViewService implements ViewApiDelegate {
         String newId = generateId(title, newDate, newTime);
         viewData.setId(newId);
 
-        updateViewData(viewData, sameid);
         return ResponseEntity.noContent().build();
     }
 
