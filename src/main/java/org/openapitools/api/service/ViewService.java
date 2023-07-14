@@ -15,7 +15,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 public class ViewService implements ViewApiDelegate {
@@ -35,6 +39,18 @@ public class ViewService implements ViewApiDelegate {
         test1.setSelectedMonth("Jan");
         test1.setId("TEST-01JAN2021-01.01");
         view_List.add(test1);
+        ViewData test2 = new ViewData();
+        test2.setTitle("WWW");
+        test2.setDay(Integer.valueOf("1"));
+        test2.setYear(Integer.valueOf("2021"));
+        test2.setHour(Integer.valueOf("1"));
+        test2.setMinute(Integer.valueOf("1"));
+        test2.setDescription("TEST");
+        test2.setSelectedStatus("Draft");
+        test2.setSelectedCategories(Arrays.asList("Fantasy", "Sci-Fi"));
+        test2.setSelectedMonth("Jan");
+        test2.setId("www-01JAN2021-01.01");
+        view_List.add(test2);
     }
 
     @Override
@@ -249,15 +265,25 @@ public class ViewService implements ViewApiDelegate {
                                                                   String date) {
         // Return the list of ViewData objects that match the provided ID, categories, and date
         List<ViewData> searchResults = new ArrayList<>();
+        //create the categories list
+        List<String> categoriesList = new ArrayList<>();
+        if (categories != null) {
+            categoriesList.add(categories);
+        }
 
         // Perform the search based on the provided parameters
         for (ViewData viewData : view_List) {
-            boolean matchesId = viewData.getId().toLowerCase().contains(id.toLowerCase());
-            boolean matchesCategories = categories != null && viewData.getSelectedCategories().contains(categories);
-            boolean matchesDate = date != null && isDateMatch(viewData, date);
-
+            boolean matchesId = id == null || (viewData.getId() != null && viewData.getId().toLowerCase().contains(id.toLowerCase()));
+            boolean matchesCategories = categories == null || viewData.getSelectedCategories().stream()
+                    .map(String::toLowerCase)
+                    .collect(Collectors.toSet())
+                    .containsAll(Arrays.stream(categories.split(","))
+                            .map(String::trim)
+                            .map(String::toLowerCase)
+                            .collect(Collectors.toSet()));
+            boolean matchesDate = date == null || isDateMatch(viewData, date);
             // Add the view data to the search results if it matches the criteria
-            if (matchesId || matchesCategories || matchesDate) {
+            if (matchesId && matchesCategories && matchesDate) {
                 searchResults.add(viewData);
             }
         }
@@ -270,15 +296,18 @@ public class ViewService implements ViewApiDelegate {
     }
 
     private boolean isDateMatch(ViewData viewData, String date) {
-        String[] dateParts = date.split("-");
-        if (dateParts.length == 3) {
-            int day = Integer.parseInt(dateParts[0]);
-            String selectedMonth = dateParts[1];
-            int year = Integer.parseInt(dateParts[2]);
+        // Split the date into day, month, and year
+        Pattern pattern = Pattern.compile("(\\d+)([a-zA-Z]+)(\\d+)");
+        Matcher matcher = pattern.matcher(date);
+        if (matcher.matches()) {
+            int day = Integer.parseInt(((Matcher) matcher).group(1));
+            String selectedMonth = matcher.group(2);
+            int year = Integer.parseInt(matcher.group(3));
 
-            return viewData.getDay() == day &&
+            // Compare the date components with the view data
+            return viewData.getDay().equals(day) &&
                     viewData.getSelectedMonth().equalsIgnoreCase(selectedMonth) &&
-                    viewData.getYear() == year;
+                    viewData.getYear().equals(year);
         }
         return false;
     }

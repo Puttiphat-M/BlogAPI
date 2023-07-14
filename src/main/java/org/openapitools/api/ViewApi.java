@@ -73,6 +73,7 @@ public interface ViewApi {
      */
     @Operation(
         operationId = "viewIdCategoriesDateGet",
+        summary = "search view by its id, ",
         responses = {
             @ApiResponse(responseCode = "200", description = "Recent view data retrieved successfully", content = {
                 @Content(mediaType = "application/json", schema = @Schema(implementation = ViewData.class))
@@ -86,7 +87,9 @@ public interface ViewApi {
     )
     default ResponseEntity<List<ViewData>> viewIdCategoriesDateGet(
             @RequestParam(required = false) String id,
+            @Parameter(name = "categories", description = "category of the blog in the format string,string(there is many)", example = "fantasy,sci-fi", required = false, in = ParameterIn.QUERY)
             @RequestParam(required = false) String categories,
+            @Parameter(name = "date", description = "Date of the blog in the format ddMMMyyyy", example = "1Jan2021", required = false, in = ParameterIn.QUERY)
             @RequestParam(required = false) String date)
     {
         return getDelegate().viewIdCategoriesDateGet(id, categories, date);
@@ -202,7 +205,7 @@ public interface ViewApi {
             @NotNull @Parameter(name = "minute", description = "", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "minute", required = true) Integer minute,
             @NotNull @Parameter(name = "description", description = "", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "description", required = true) String description,
             @NotNull @Parameter(name = "selectedCategories", description = "", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "selectedCategories", required = true) List<String> selectedCategories,
-            @NotNull @Parameter(name = "selectedStatus", description = "", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "selectedStatus", required = true) String selectedStatus,
+            @NotNull @Parameter(name = "selectedStatus", description = "",example = "Draft",required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "selectedStatus", required = true) String selectedStatus,
             @NotNull @Parameter(name = "year", description = "",  required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "year", required = false) Integer year,
             @NotNull @Parameter(name = "hour", description = "", required = true, in = ParameterIn.QUERY) @Valid @RequestParam(value = "hour", required = false) Integer hour
     ) {
